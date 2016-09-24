@@ -1,9 +1,9 @@
-// Initialize Firebase
-var config = {
+ // Initialize Firebase
+  var config = {
     apiKey: "AIzaSyCdqCM6U9nemfghtlDZrpfiqVLjeN52ysU",
     authDomain: "train-scheduler-dc5da.firebaseapp.com",
     databaseURL: "https://train-scheduler-dc5da.firebaseio.com",
-    storageBucket: "",
+    storageBucket: "train-scheduler-dc5da.appspot.com",
     messagingSenderId: "410956871071"
   };
   firebase.initializeApp(config);
@@ -24,7 +24,7 @@ $("#addTrain").on("click", function() {
   // Getting the value from user input
   var trainName = $('#traininput').val().trim();
   var destination = $('#destinationinput').val().trim();
-  var firstTrain = moment($('#firsttraintimeinput').val().trim(), "HH:mm").subtract(1,"years").format("HH:mm");
+  var firstTrain = moment($('#firsttraintimeinput').val().trim(), "HH:mm").subtract(1,"years").format("X");
   var frequency = $('#frequencyinput').val().trim();
 
   // Creates local "temporary" object for holding train data
@@ -36,7 +36,14 @@ $("#addTrain").on("click", function() {
   }
 
   // Uploads train data to the database
-  trainData.ref().push(newTrain);
+  dataRef.ref().push(newTrain);
+
+  // Clears all of the text-boxes
+  $("#traininput").val("");
+  $("#destinationinput").val("");
+  $("#firsttraintimeinput").val("");
+  $("#frequencyinput").val("");
+
 
   // Don't refresh the page!
   return false;
@@ -55,20 +62,20 @@ dataRef.ref().on("child_added", function(childSnapshot, prevChildKey) {
   // Calculating minutes until arrival
 
   // Difference between the times
-  var diffTime = moment().diff(moment(tFirstTrain), "minutes");
+  var diffTime = moment().diff(moment.unix(tFirstTrain), "minutes");
    // Time apart (remainder)
   var tRemainder = diffTime % tFrequency;
   // Minute Until Train
-  var minutesAway = tfrequency - tRemainder;
+  var minutesAway = tFrequency - tRemainder;
   // Next Train
-  var nextTrain = moment().add(minutesAway, "minutes").format("HH:mm");
+  var nextTrain = moment().add(minutesAway, "m").format("hh:mm A");
 
   console.log("DIFFERENCE IN TIME: " + diffTime);
   console.log(tRemainder);
   console.log("MINUTES TILL TRAIN: " + minutesAway);
   console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"))
 
-  $("#trainTable > tbody").append("<tr><td>" + tName + "</td><td>" + tdestination + "</td><td>" + tfrequency + "</td><td>" + nextTrain + "</td><td>" + minutesAway + "</td></tr>");
+  $("#trainTable > tbody").append("<tr><td>" + tName + "</td><td>" + tDestination + "</td><td>" + tFrequency + "</td><td>" + nextTrain + "</td><td>" + minutesAway + "</td></tr>");
 
 }, function(errorObject) {
     console.log("Errors handled: " + errorObject.code)
